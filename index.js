@@ -44,8 +44,6 @@ module.exports = function allwrite(apiUrl, root) {
       )
       .replace(leadOrTrail, "");
 
-    console.log("URI", uri);
-
     get(apiUrl + "/" + uri, function(res) {
       const { statusCode } = res;
       const contentType = res.headers['content-type'];
