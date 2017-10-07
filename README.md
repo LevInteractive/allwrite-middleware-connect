@@ -18,13 +18,21 @@ npm i --save allwrite-middleware-connect
 
 # Usage
 
+#### `allwrite(apiURL, baseURI)`
+
+**Parameters**
+
+* `apiURL`: Required. This should be the remote path to your server running allwrite.
+* `baseURI`: Optional. If you are serving docs at, say, `/my/docs`, then your baseURI will be `/my/docs`. If left blank, the base "/" is assumed.
+
 Controller:
 
 ```javascript
 const allwrite = require("allwrite-middleware-connect");
 
-app.get("/docs/:slug", allwrite("http://allwrite-server", "/docs", handler));
+app.get("/docs/:slug", allwrite("http://allwrite-server", "/docs"), handler);
 
+// Your typical express/connect router
 function handler(req, res, next) {
 
   // code will equal 404 when the slug doesn't exist.
