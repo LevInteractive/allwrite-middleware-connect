@@ -10,6 +10,10 @@ application, you must render the content on the server first and display it on
 page load. This middleware will grab the content from your allwrite server and pass
 it to `req.allwriteData` for you to display in your view for crawlers.
 
+When using a theme like
+[Spartan](https://github.com/LevInteractive/spartan-allwrite), the content will
+be unseen to the javascript-capable humans and only parsable for crawlers.
+
 # Installation
 
 ```
@@ -23,14 +27,18 @@ npm i --save allwrite-middleware-connect
 **Parameters**
 
 * `apiURL`: Required. This should be the remote path to your server running allwrite.
-* `baseURI`: Optional. If you are serving docs at, say, `/my/docs`, then your baseURI will be `/my/docs`. If left blank, the base "/" is assumed.
+* `baseURI`: Optional. If you are serving docs at say, `/my/docs`, then your baseURI will be `/my/docs`. If left blank, the base "/" is assumed.
 
 Controller:
 
 ```javascript
 const allwrite = require("allwrite-middleware-connect");
 
-app.get("/docs/:slug", allwrite("http://allwrite-server", "/docs"), handler);
+app.get(
+  "/docs/:slug",
+  allwrite("http://allwrite-server", "/docs"),
+  handler
+);
 
 // Your typical express/connect router
 function handler(req, res, next) {
@@ -63,7 +71,3 @@ View:
   <%= content %>
 </div>
 ```
-
-When using a theme like
-[Spartan](https://github.com/LevInteractive/spartan-allwrite), the content will
-be unseen to the javascript-capable humans and only parsable for crawlers.
