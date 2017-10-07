@@ -1,0 +1,28 @@
+{
+  "name": "allwrite-middleware-connect",
+  "version": "1.0.0",
+  "description": "Middleware for Allwrite Docs which dynamically pulls content based on the URL allowing for SEO friendly documentation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LevInteractive/allwrite-middleware-connect.git"
+  },
+  "keywords": [
+    "allwrite",
+    "allwrite",
+    "docs",
+    "technical",
+    "documentation",
+    "documentation",
+    "seo"
+  ],
+  "author": "Lev Interactive",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LevInteractive/allwrite-middleware-connect/issues"
+  },
+  "homepage": "https://github.com/LevInteractive/allwrite-middleware-connect#readme"
+}
