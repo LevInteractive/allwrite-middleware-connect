@@ -1,6 +1,6 @@
 {
   "name": "allwrite-middleware-connect",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Middleware for Allwrite Docs which dynamically pulls content based on the URL allowing for SEO friendly documentation.",
   "main": "index.js",
   "scripts": {

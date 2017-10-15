@@ -5,6 +5,46 @@ const adapters = {
 };
 
 /**
+ * Request Allwrite Server.
+ *
+ * @param {string} url The url to request.
+ * @return {Promise}
+ */
+function request(remoteUrl) {
+  return new Promise((resolve, reject) => {
+    const get = adapters[url.parse(remoteUrl).protocol].get;
+    get(remoteUrl, res => {
+      const { statusCode } = res;
+      const contentType = res.headers['content-type'];
+      let rawData = '';
+
+      // If it's not a 200 and not a 404 there's another issue. Allwrite will
+      // only return these two statuses.
+      if (statusCode !== 200 && statusCode !== 404) {
+        const error = new Error('Allwrite: Request Failed.\n' +
+                                `Status Code: ${statusCode}`);
+        error.code = statusCode;
+        return reject(error);
+      } else if (!/^application\/json/.test(contentType)) {
+        const error = new Error('Allwrite: Invalid content-type.\n' +
+                          `Expected application/json but got ${contentType}`);
+        return reject(error);
+      }
+
+      res.setEncoding("utf8");
+      res.on("data", chunk => rawData += chunk);
+      res.on("end", () => {
+        try {
+          resolve(JSON.parse(rawData));
+        } catch (e) {
+          reject(new Error("Allwrite response parsing error: " + e.message));
+        }
+      });
+    });
+  });
+}
+
+/**
  * Allwrite Middleware for Connect (and Express).
  *
  * Basic usage:
@@ -28,7 +68,6 @@ const adapters = {
  *                        have a trailing and leading slash.
  */
 module.exports = function allwrite(apiUrl, root) {
-  const get = adapters[ url.parse(apiUrl).protocol ].get;
   const leadOrTrail = /^\/*|\/*$/g;
 
   // Normalize all paths to be without slashes for sanity.
@@ -44,36 +83,19 @@ module.exports = function allwrite(apiUrl, root) {
       )
       .replace(leadOrTrail, "");
 
-    get(apiUrl + "/" + uri, function(res) {
-      const { statusCode } = res;
-      const contentType = res.headers['content-type'];
-      let rawData = '';
-
-      // If it's not a 200 and not a 404 there's another issue. Allwrite will
-      // only return these two statuses.
-      if (statusCode !== 200 && statusCode !== 404) {
-        const error = new Error('Allwrite: Request Failed.\n' +
-                                `Status Code: ${statusCode}`);
-        error.code = statusCode;
-        return next(error);
-      } else if (!/^application\/json/.test(contentType)) {
-        const error = new Error('Allwrite: Invalid content-type.\n' +
-                          `Expected application/json but got ${contentType}`);
-        return next(error);
-      }
-
-      res.setEncoding("utf8");
-      res.on("data", function(chunk) {
-        rawData += chunk;
-      });
-      res.on("end", function() {
-        try {
-          req.allwriteData = JSON.parse(rawData);
-          next();
-        } catch (e) {
-          next(new Error("Allwrite response parsing error: " + e.message));
-        }
-      });
-    });
+    let menu;
+    request(apiUrl + "/menu")
+      .then(menuJson => {
+        menu = menuJson;
+        return request(apiUrl + "/" + uri)
+      })
+      .then(json => {
+        req.allwriteData = {
+          page: json.result,
+          menu: menu.result
+        };
+        next();
+      })
+      .catch(err => next(err));
   };
 };
